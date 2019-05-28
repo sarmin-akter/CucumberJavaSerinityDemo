@@ -1,0 +1,340 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.msgqa</groupId>
+	<artifactId>eventengine-cucumber-java-framework</artifactId>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
+	<name>Java, Cucumber, JUnit and Selenium Automation Test Framework</name>
+	<url>https://github.com/msgtech</url>
+
+	<properties>
+		<surefire.fork.count>5</surefire.fork.count>
+		<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+		<build.number>${maven.build.timestamp}/${platform}/${platformVersion}/${browser}/${browserVersion}</build.number>
+		<reports.directory>${project.build.directory}/../reports/${build.number}</reports.directory>
+		<cucumber.tags>~@ignore</cucumber.tags>
+		<info.cukes.cucumber-java.version>1.2.4</info.cukes.cucumber-java.version>
+		<info.cukes.cucumber-picocontainer.version>1.2.4</info.cukes.cucumber-picocontainer.version>
+		<info.cukes.cucumber-junit.version>1.2.4</info.cukes.cucumber-junit.version>
+
+		<serenity.version>1.1.36</serenity.version>
+		<serenity.maven.version>1.1.36</serenity.maven.version>
+		<serenity.cucumber.version>1.1.8</serenity.cucumber.version>
+
+	</properties>
+
+	<!-- Define the Bintray repos for convenience -->
+	<repositories>
+		<repository>
+			<id>serenity</id>
+			<name>bintray</name>
+			<url>http://dl.bintray.com/serenity/maven</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>serenity</id>
+			<name>bintray-plugins</name>
+			<url>http://dl.bintray.com/serenity/maven</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-core</artifactId>
+			<version>${serenity.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-cucumber</artifactId>
+			<version>${serenity.cucumber.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>1.7.0</version>
+			<scope>test</scope>
+		</dependency>
+
+
+
+		<!--selenium & selenium Server -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>3.0.0</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!--hamcrest -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-junit</artifactId>
+			<version>2.0.0.0</version>
+		</dependency>
+
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>16.0.1</version>
+		</dependency>
+
+		<!-- Json Support -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<!--Extent Reports -->
+
+		<dependency>
+			<groupId>com.relevantcodes</groupId>
+			<artifactId>extentreports</artifactId>
+			<version>2.40.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.0.6</version>
+			<scope>test</scope>
+		</dependency>
+
+
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>read-properties</id>
+			<activation>
+				<file>
+					<exists>src/test/resources/config.properties</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<!--version>1.0-alpha-2</version -->
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>src/test/resources/config.properties</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+
+			<!-- ####### maven-compiler-plugin ######### -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<!--fork>true</fork -->
+					<encoding>UTF-8</encoding>
+					<source>1.7</source>
+					<target>1.7</target>
+					<!--compilerArgument>-Werror</compilerArgument -->
+				</configuration>
+			</plugin>
+
+			<!-- ####### cucumber-jvm-parallel-plugin ######### -->
+			<plugin>
+				<groupId>com.github.temyers</groupId>
+				<artifactId>cucumber-jvm-parallel-plugin</artifactId>
+				<version>5.0.0</version>
+
+				<executions>
+					<execution>
+						<id>generateRunners</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>generateRunners</goal>
+						</goals>
+						<configuration>
+							<!-- Mandatory -->
+							<!-- List of package names to scan for glue code. -->
+							<glue>
+								<package>com.api.msg.stepsdefinations</package>
+							</glue>
+
+							<outputDirectory>src/test/java/com/api/msg/testrunner</outputDirectory>
+							<featuresDirectory>src/test/resources/EESerenityFeatures</featuresDirectory>
+							<cucumberOutputDir>target/cucumber-parallel</cucumberOutputDir>
+
+							<customVmTemplate>src/test/resources/cucumber-serenity-runner.vm</customVmTemplate>
+
+							<!-- Inner Plugin Used inside JVM Parallel Plygins -->
+							<plugins>
+								<plugin>
+									<name>json</name>
+									<extension>json</extension>
+									<outputDirectory>${project.build.directory}/cucumber-parallel/json</outputDirectory>
+								</plugin>
+							</plugins>
+
+							<strict>true</strict>
+							<monochrome>true</monochrome>
+							<tags>
+								<tag></tag>
+							</tags>
+
+							<useTestNG>false</useTestNG>
+							<namingScheme>simple</namingScheme>
+							<namingPattern>Parallel{c}IT</namingPattern>
+
+							<!-- Options:FEATURE / SCENARIO -->
+							<parallelScheme>FEATURE</parallelScheme>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- ####### maven-surefire-plugin ######### -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+				<executions>
+					<execution>
+						<id>acceptance-test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<forkCount>${surefire.fork.count}</forkCount>
+							<reuseForks>false</reuseForks>
+							<argLine>-Duser.language=en</argLine>
+							<argLine>-Xmx1024m</argLine>
+							<argLine>-XX:MaxPermSize=256m</argLine>
+							<argLine>-Dfile.encoding=UTF-8</argLine>
+							<useFile>false</useFile>
+							<includes>
+								<include>**/Parallel*IT.class</include>
+							</includes>
+							<testFailureIgnore>true</testFailureIgnore>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- ####### maven-failsafe-plugin ######### -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.18.1</version>
+			</plugin>
+
+			<!-- ####### maven-cucumber-reporting ######### -->
+			<plugin>
+				<!-- <groupId>net.masterthought</groupId> -->
+				<!-- <artifactId>cucumber-reporting</artifactId> -->
+				<!-- <version>3.20.0</version> -->
+				<groupId>net.masterthought</groupId>
+				<artifactId>maven-cucumber-reporting</artifactId>
+				<version>3.8.0</version>
+
+				<executions>
+					<execution>
+						<id>execution</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<projectName>AutoRunner_Cucumber</projectName>
+							<outputDirectory>${project.build.directory}/reports/cucumber-reports</outputDirectory>
+							<cucumberOutput>target/cucumber-parallel/json</cucumberOutput>
+							<skippedFails>true</skippedFails>
+							<enableFlashCharts>false</enableFlashCharts>
+							<buildNumber>42</buildNumber>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<!-- Generate the Serenity test reports after the integration tests -->
+			<plugin>
+				<groupId>net.serenity-bdd.maven.plugins</groupId>
+				<artifactId>serenity-maven-plugin</artifactId>
+				<version>${serenity.maven.version}</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>net.serenity-bdd</groupId>
+						<artifactId>serenity-core</artifactId>
+						<version>${serenity.version}</version>
+					</dependency>
+				</dependencies>
+
+				<executions>
+					<execution>
+						<id>serenity-reports</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
+
+</project>
